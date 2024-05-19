@@ -1,0 +1,60 @@
+services:
+  postgres:
+    image: postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: '123456'
+      POSTGRES_USER: postgres
+      POSTGRES_DB: url-shortener-app
+    networks:
+      - url-shortener-app-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: 'carloshkruger@gmail.com.br'
+      PGADMIN_DEFAULT_PASSWORD: '123456'
+    ports:
+      - '5433:80'
+    depends_on:
+      - postgres
+    networks:
+      - url-shortener-app-network
+
+  redis:
+    image: 'bitnami/redis:latest'
+    ports:
+      - '6379:6379'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    networks:
+      - url-shortener-app-network
+
+  postgres-testing:
+    image: postgres
+    ports:
+      - '5434:5432'
+    volumes:
+      - ./data/postgres-testing:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: '123456'
+      POSTGRES_USER: test
+      POSTGRES_DB: url-shortener-app-test
+    networks:
+      - url-shortener-app-network
+
+  redis-testing:
+    image: 'bitnami/redis:latest'
+    ports:
+      - '6380:6379'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    networks:
+      - url-shortener-app-network
+
+networks:
+  url-shortener-app-network:
+    driver: bridge
